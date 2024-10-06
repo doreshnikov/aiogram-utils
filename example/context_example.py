@@ -9,10 +9,10 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, CallbackQuery
 from aiogram.utils.formatting import Text, Bold, as_line
 
-from consts.aliases import KeyboardBuilder, Button
-from consts.buttons import MENU_CLOSE, MENU_UP
-from context.context import Context
-from context.types import Response
+from tgutils.consts.aliases import KeyboardBuilder, Button
+from tgutils.consts.buttons import MENU_CLOSE, MENU_UP
+from tgutils.context.context import Context
+from tgutils.context.context import Response
 
 bot = Bot(os.getenv('BOT_TOKEN'))
 router = Router()

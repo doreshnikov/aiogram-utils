@@ -4,9 +4,9 @@ import uuid
 from abc import ABC
 from dataclasses import dataclass
 from enum import Enum
-from typing import Callable, Awaitable, Type
+from typing import Callable, Type
 
-from aiogram import Bot, Router
+from aiogram import Router
 from aiogram.filters.callback_data import CallbackData
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State

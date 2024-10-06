@@ -4,7 +4,7 @@ from typing import Callable, Awaitable
 from aiogram.types import Message
 from aiogram.utils.formatting import Text
 
-from consts.aliases import Keyboard
+from tgutils.consts.aliases import Keyboard
 
 
 @dataclass
