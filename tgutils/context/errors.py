@@ -2,8 +2,6 @@ from abc import ABC
 
 from aiogram.fsm.state import State
 
-from .types import Handler
-
 
 class ContextException(Exception, ABC):
     pass

@@ -5,8 +5,8 @@ from dataclasses import dataclass, field
 from aiogram.filters.callback_data import CallbackData
 from aiogram.types import CallbackQuery
 
-from tgutils.consts.aliases import Button, KeyboardBuilder
-from tgutils.consts.buttons import BUTTON_OFF, PAGE_UP, PAGE_DOWN, PAGE_LEFT, PAGE_RIGHT
+from ..consts.aliases import Button, KeyboardBuilder
+from ..consts.buttons import BUTTON_OFF, PAGE_UP, PAGE_DOWN, PAGE_LEFT, PAGE_RIGHT
 
 DEFAULT_MAX_ROWS = 8
 DEFAULT_ROW_ITEMS = 1
