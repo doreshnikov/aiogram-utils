@@ -82,6 +82,7 @@ def name_menu(ctx: DefaultContext) -> Response:
 @DefaultContext.inject
 async def handle_new_name(ctx: DefaultContext, message: Message):
     ctx.name = message.text
+    await message.delete()
     await ctx.back()
 
 
