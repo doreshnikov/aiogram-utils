@@ -18,11 +18,7 @@ class LoggingMiddleware(BaseMiddleware):
     def _fix_utf8(s: str) -> str:
         return s if s.isascii() else str(s.encode('utf-8'))[2:-1]
 
-
     def _simplify_object(self, event: Any, ) -> Any:
-        if self.ignore_keys is None:
-            ignore_keys = set()
-
         try:
             if isinstance(event, TelegramObject):
                 event = event.model_dump()
