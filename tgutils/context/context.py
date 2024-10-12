@@ -215,8 +215,6 @@ class Context(ABC):
                 case cls.Action.FINISH: await ctx.finish()
             # formatter:on
 
-        logging.info(f'Registered context {cls} for router {router}')
-
     @classmethod
     def menu_button(cls, action: 'Context.Action') -> Button:
         if cls not in Context._callback:

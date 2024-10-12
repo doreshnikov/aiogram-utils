@@ -10,7 +10,6 @@ from aiogram.types import Message, CallbackQuery
 from aiogram.utils.formatting import Text, Bold, as_line
 
 from tgutils.consts.aliases import KeyboardBuilder, Button
-from tgutils.consts.buttons import MENU_CLOSE, MENU_UP
 from tgutils.context.context import Context
 from tgutils.context.context import Response
 
