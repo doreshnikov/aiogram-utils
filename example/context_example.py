@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import os
 from dataclasses import dataclass
 
@@ -11,7 +12,8 @@ from aiogram.utils.formatting import Text, Bold, as_line
 
 from tgutils.consts.aliases import KeyboardBuilder, Button
 from tgutils.context import Context
-from tgutils.context import Response
+from tgutils.context.types import Response
+from tgutils.middleware.logging import LoggingMiddleware
 
 bot = Bot(os.getenv('BOT_TOKEN'))
 router = Router()
@@ -82,7 +84,12 @@ async def handle_new_name(ctx: DefaultContext, message: Message):
     await ctx.back()
 
 
+logging.basicConfig(level=logging.DEBUG)
+
 DefaultContext.prepare(router)
+
 dispatcher = Dispatcher()
 dispatcher.include_router(router)
+dispatcher.update.outer_middleware(LoggingMiddleware())
+
 asyncio.run(dispatcher.start_polling(bot))

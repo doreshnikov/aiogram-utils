@@ -29,4 +29,4 @@ class UnboundContextError(ContextException):
 
 class HistoricalStateNotFound(ContextException):
     def __init__(self, state: State):
-        super().__init__(f'State {state} was not found in history during backoff')
+        super().__init__(f'State {state} was not found in history during backoff')  # noqa E713
