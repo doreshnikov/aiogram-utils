@@ -32,7 +32,7 @@ class DefaultState(StatesGroup):
 @DefaultContext.entry_point
 async def handle_start(ctx: DefaultContext, message: Message):
     # ctx.set_default(ctx.senders.EDIT)
-    await ctx.advance(DefaultState.MAIN, message.reply)
+    await ctx.advance(DefaultState.MAIN, message.reply, cause=message)
 
 
 class NameChangeCallback(CallbackData, prefix='change-name'):
@@ -49,7 +49,7 @@ def main_menu(ctx: DefaultContext) -> Response:
 
     keyboard = KeyboardBuilder()
     keyboard.row(Button(text='Change your name', callback_data=NameChangeCallback().pack()))
-    keyboard.row(Button(text=MENU_CLOSE, callback_data=ctx.menu_callback_data(ctx.Action.FINISH)))
+    keyboard.row(ctx.menu_button(ctx.Action.FINISH))
 
     return Response(
         text=Text(*map(as_line, lines)),
@@ -67,10 +67,7 @@ async def handle_name_change(ctx: DefaultContext, query: CallbackQuery):
 @DefaultContext.register(DefaultState.NAME)
 def name_menu(ctx: DefaultContext) -> Response:
     keyboard = KeyboardBuilder()
-    keyboard.row(
-        Button(text=MENU_UP, callback_data=ctx.menu_callback_data(ctx.Action.BACK)),
-        Button(text=MENU_CLOSE, callback_data=ctx.menu_callback_data(ctx.Action.FINISH))
-    )
+    keyboard.row(ctx.menu_button(ctx.Action.BACK), ctx.menu_button(ctx.Action.FINISH))
 
     return Response(
         text='Please input your name',

@@ -6,11 +6,15 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Callable, Type
 
+import aiogram.exceptions as tg_exc
 from aiogram import Router
 from aiogram.filters.callback_data import CallbackData
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State
 from aiogram.types import Message, CallbackQuery
+
+from tgutils.consts.aliases import Button
+from tgutils.consts.buttons import MENU_UP, MENU_CLOSE
 
 from .errors import EmptyContextError, ScopeError, NoResponderFoundError, UnboundContextError
 from .types import Response, Handler, Sender
@@ -21,6 +25,7 @@ class _ContextMenu:
     message: Message
     state: State
     is_new: bool
+    cause: Message | None = None
 
 
 class Context(ABC):
@@ -34,7 +39,10 @@ class Context(ABC):
         self._states_stack: list[_ContextMenu] = []
 
         async def _edit(*args, **kwargs):
-            return await self._menu.message.edit_text(*args, **kwargs)
+            try:
+                return await self._menu.message.edit_text(*args, **kwargs)
+            except tg_exc.TelegramBadRequest as e:
+                logging.info(f'Bad request trying to edit message: {e}')
 
         async def _send(*args, **kwargs):
             return await self._menu.message.reply(*args, **kwargs)
@@ -136,6 +144,8 @@ class Context(ABC):
             if not menu.is_new:
                 continue
             await menu.message.delete()
+            if menu.cause is not None:
+                await menu.cause.delete()
         await self._fsm.set_state(self._safe_state())
 
     async def _cleanup(self):
@@ -151,7 +161,7 @@ class Context(ABC):
         response = responder(self)
         return await sender(**response.as_kwargs())
 
-    async def advance(self, new_state: State, sender: Sender | None = None):
+    async def advance(self, new_state: State, sender: Sender | None = None, *, cause: Message | None = None):
         if sender is None:
             sender = self._default_sender
 
@@ -159,7 +169,7 @@ class Context(ABC):
         msg = await self._fit_message(new_state, sender)
         if self._safe_state() != new_state:
             is_new = self._safe_message_id() != msg.message_id
-            self._states_stack.append(_ContextMenu(msg, new_state, is_new))
+            self._states_stack.append(_ContextMenu(msg, new_state, is_new, cause))
 
     async def back(self):
         menu = self._ensure_stack().pop()
@@ -177,8 +187,8 @@ class Context(ABC):
         await self._cleanup()
 
     class Action(Enum):
-        BACK = 'back'
-        FINISH = 'finish'
+        BACK = MENU_UP
+        FINISH = MENU_CLOSE
 
     @classmethod
     def prepare(cls, router: Router):
@@ -200,8 +210,11 @@ class Context(ABC):
         logging.info(f'Registered context {cls} for router {router}')
 
     @classmethod
-    def menu_callback_data(cls, action: 'Context.Action') -> str:
+    def menu_button(cls, action: 'Context.Action') -> Button:
         if cls not in Context._callback:
             raise UnboundContextError()
 
-        return Context._callback[cls](action=action).pack()
+        return Button(
+            text=action.value,
+            callback_data=Context._callback[cls](action=action).pack(),
+        )
