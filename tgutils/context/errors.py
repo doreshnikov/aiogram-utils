@@ -24,4 +24,9 @@ class NoResponderFoundError(ContextException):
 
 class UnboundContextError(ContextException):
     def __init__(self):
-        super().__init__('Context was not registered ')
+        super().__init__('Context was not registered with any router')
+
+
+class HistoricalStateNotFound(ContextException):
+    def __init__(self, state: State):
+        super().__init__(f'State {state} was not found in history during backoff')

@@ -16,7 +16,7 @@ from aiogram.types import Message, CallbackQuery
 from tgutils.consts.aliases import Button
 from tgutils.consts.buttons import MENU_UP, MENU_CLOSE
 
-from .errors import EmptyContextError, ScopeError, NoResponderFoundError, UnboundContextError
+from .errors import EmptyContextError, ScopeError, NoResponderFoundError, UnboundContextError, HistoricalStateNotFound
 from .types import Response, Handler, Sender
 
 
@@ -182,6 +182,12 @@ class Context(ABC):
             await menu.message.delete()
         # noinspection PyTypeChecker
         await self._fit_message(new_state, self.senders.EDIT)
+
+    async def backoff_until(self, state: State):
+        while self._safe_state() != state:
+            await self.back()
+            if self._safe_state() is None:
+                raise HistoricalStateNotFound(state)
 
     async def finish(self):
         await self._cleanup()
