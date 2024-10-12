@@ -16,8 +16,9 @@ from aiogram.types import Message, CallbackQuery
 from tgutils.consts.aliases import Button
 from tgutils.consts.buttons import MENU_UP, MENU_CLOSE
 
-from .errors import EmptyContextError, ScopeError, NoResponderFoundError, UnboundContextError, HistoricalStateNotFound
-from .types import Response, Handler, Sender
+from tgutils.context.errors import EmptyContextError, ScopeError, NoResponderFoundError, UnboundContextError, \
+    HistoricalStateNotFound
+from tgutils.context.types import Response, Handler, Sender
 
 
 @dataclass

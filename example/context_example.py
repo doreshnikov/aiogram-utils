@@ -10,8 +10,8 @@ from aiogram.types import Message, CallbackQuery
 from aiogram.utils.formatting import Text, Bold, as_line
 
 from tgutils.consts.aliases import KeyboardBuilder, Button
-from tgutils.context.context import Context
-from tgutils.context.context import Response
+from tgutils.context import Context
+from tgutils.context import Response
 
 bot = Bot(os.getenv('BOT_TOKEN'))
 router = Router()
