@@ -164,6 +164,8 @@ class Context(ABC):
     async def advance(self, new_state: State, sender: Sender | None = None, *, cause: Message | None = None):
         if sender is None:
             sender = self._default_sender
+        if self._safe_state() == new_state:
+            sender = self.senders.EDIT
 
         await self._ensure_fsm().set_state(new_state)
         msg = await self._fit_message(new_state, sender)
