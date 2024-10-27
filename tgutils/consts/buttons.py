@@ -14,3 +14,4 @@ PAGE_LEFT = emoji.emojize(':left_arrow: Влево', variant='text_type')
 PAGE_RIGHT = emoji.emojize('Вправо :right_arrow:', variant='text_type')
 
 BUTTON_OFF = emoji.emojize(':pause_button:', variant='text_type')
+BUTTON_STUB = emoji.emojize(':white_small_square:', variant='text_type')
