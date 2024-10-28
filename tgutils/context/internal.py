@@ -29,6 +29,12 @@ class _ContextMenu:
     cause: Message | None = None
 
 
+class ContextTransition(Enum):
+    ADVANCE = 'advance'
+    HOLD = 'hold'
+    BACK = 'back'
+
+
 class Context(ABC):
     Responder = Callable[['Context'], Response]
 
@@ -38,6 +44,7 @@ class Context(ABC):
     def __init__(self):
         self._fsm: FSMContext | None = None
         self._states_stack: list[_ContextMenu] = []
+        self._history: list[ContextTransition] = []
 
         async def _edit(*args, **kwargs):
             try:
@@ -71,6 +78,16 @@ class Context(ABC):
     @property
     def _menu(self) -> _ContextMenu:
         return self._ensure_stack()[-1]
+
+    @property
+    def chat_id(self) -> int:
+        return self._menu.message.chat.id
+
+    @property
+    def last_transition(self) -> ContextTransition:
+        if len(self._history) > 0:
+            return self._history[-1]
+        return ContextTransition.HOLD
 
     def _safe_state(self) -> State | None:
         if len(self._states_stack) == 0:
@@ -167,6 +184,9 @@ class Context(ABC):
             sender = self._default_sender
         if self._safe_state() == new_state:
             sender = self.senders.EDIT
+            self._history.append(ContextTransition.HOLD)
+        else:
+            self._history.append(ContextTransition.ADVANCE)
 
         await self._ensure_fsm().set_state(new_state)
         msg = await self._fit_message(new_state, sender)
@@ -183,6 +203,8 @@ class Context(ABC):
 
         if menu.is_new:
             await menu.message.delete()
+
+        self._history.append(ContextTransition.BACK)
         # noinspection PyTypeChecker
         await self._fit_message(new_state, self.senders.EDIT)
 
